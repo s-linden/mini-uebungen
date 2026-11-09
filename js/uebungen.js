@@ -58,7 +58,7 @@ const UEBUNGEN = {
     rechts: '$a=b=0$',
     // Kasten, der bei der Lösung erscheint: gilt die jeweilige Richtung, und warum (nicht)?
     begruendung: [
-      { richtung: String.raw`$a=b=0 \Rightarrow a+b=0$`, gilt: true, grund: '$0+0=0$' },
+      { richtung: String.raw`$a=b=0 \Rightarrow a+b=0$`, gilt: true, grund: 'Denn: $0+0=0$' },
       { richtung: String.raw`$a+b=0 \Rightarrow a=b=0$`, gilt: false, grund: String.raw`Gegenbeispiel: $a=1,\ b=-1$ ergibt $a+b=0$` },
     ],
     aufgaben: (() => {

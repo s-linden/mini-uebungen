@@ -117,6 +117,7 @@
     if (frei) Pruefung.mix($('loesung'), Pruefung.loesungSatz(a));
     else $('loesung').replaceChildren();
     $('btn-loesung').textContent = frei ? 'Noch einmal abspielen' : 'Lösung zeigen';
+    $('btn-loesung').hidden = frei && a.art === 'wahl'; // ohne Animation gibt es nichts zu wiederholen
 
     const offen = runde.status === 'open';
     $('btn-abgabe').textContent = offen ? 'Abgabe beenden' : 'Abgabe wieder öffnen';
