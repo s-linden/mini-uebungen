@@ -3,13 +3,13 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Miniübung</title>
+  <title>Übung</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body class="teacher">
   <header class="bar">
-    <h1>Miniübung: <span id="titel"></span></h1>
+    <h1 id="titel"></h1>
     <div class="bar-actions">
       <select id="uebung" aria-label="Übung" hidden></select>
       <button id="btn-toggle" class="ghost">Auswertung</button>
@@ -37,11 +37,18 @@
         <p class="join-hint">Mit dem Handy scannen oder öffnen:<br><span id="join-url" class="join-url"></span></p>
         <p class="join-code">Code <span id="join-code"></span></p>
       </div>
-      <div class="count-panel">
-        <div id="count" class="count">0</div>
-        <div id="count-label" class="count-label">Abgaben</div>
-        <p id="status-text" class="preview"></p>
-        <button id="btn-auswertung" class="primary big">Zur Auswertung</button>
+      <div class="start-rechts">
+        <div id="skizze-start" class="skizze-gross"></div>
+        <div class="start-zahlen">
+          <div class="start-zaehler">
+            <div id="count" class="count">0</div>
+            <div>
+              <div id="count-label" class="count-label">Abgaben</div>
+              <p id="status-text" class="preview"></p>
+            </div>
+          </div>
+          <button id="btn-auswertung" class="primary big">Zur Auswertung</button>
+        </div>
       </div>
     </section>
 

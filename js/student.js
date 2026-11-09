@@ -158,6 +158,7 @@
     if (!uebung) {
       uebung = UEBUNGEN[runde.uebung];
       if (!uebung) return message('Unbekannte Übung', 'Bitte laden Sie die Seite neu.');
+      document.title = uebung.titel;
       Skizze.erstelle($('skizze-box'), uebung);
       baueFormular();
       if (gesendet) setzeEingaben(gesendet);

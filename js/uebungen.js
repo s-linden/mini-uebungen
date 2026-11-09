@@ -6,7 +6,7 @@
 //   aus:      Vektoren, die in der Aufgabe verwendet werden dürfen
 const UEBUNGEN = {
   'vektoren-vieleck': {
-    titel: 'Vektoren im Vieleck',
+    titel: 'Addition und Subtraktion von Vektoren',
     viewBox: '25 8 610 345',
     // Nur die Abhängigkeiten zwischen den Vektoren zählen; die Punkte sind so gewählt,
     // dass die Pfeile an jedem Eckpunkt weit auseinanderlaufen.

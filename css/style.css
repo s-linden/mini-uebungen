@@ -303,3 +303,14 @@ button.klein { font-size: 0.95rem; padding: 0.4em 0.8em; }
 .skizze text.minus { font: 400 28px "Times New Roman", serif; }
 .skizze .punkt { fill: var(--vektor); }
 .aufgabe-kopf strong { font-size: 1.08rem; }
+
+/* Startbildschirm: QR-Code links, Skizze und Zähler rechts */
+.teacher #view-qr { grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr); min-height: 0; align-items: start; }
+.teacher .qr { width: min(100%, 52vh); }
+.start-rechts { display: flex; flex-direction: column; gap: 1rem; min-width: 0; }
+.start-zahlen { display: flex; justify-content: space-between; align-items: center; gap: 1.5rem; flex-wrap: wrap; }
+.start-zaehler { display: flex; align-items: center; gap: 1rem; }
+.start-zaehler .count { font-size: clamp(3.5rem, 8vw, 7rem); }
+.start-zaehler .count-label { font-size: clamp(1.2rem, 2.2vw, 2rem); }
+.start-zaehler .preview { margin: 0; }
+@media (max-width: 800px) { .teacher #view-qr { grid-template-columns: 1fr; } }

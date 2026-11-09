@@ -12,6 +12,7 @@
   let aktiv = 0;             // Index der angezeigten Aufgabe
   let skizze = null;
   let skizzeFuer = null;     // Übung, für die die Skizze gezeichnet ist
+  let startFuer = null;      // dasselbe für die Skizze auf dem Startbildschirm
   let unsubscribe = [];
 
   for (const [id, u] of Object.entries(UEBUNGEN)) $('uebung').add(new Option(u.titel, id));
@@ -144,6 +145,7 @@
   function render() {
     if (!runde) return;
     $('titel').textContent = uebung().titel;
+    document.title = uebung().titel;
     $('uebung').value = runde.uebung;
     $('btn-toggle').textContent = ansicht === 'qr' ? 'Auswertung' : 'QR-Code';
     if (ansicht === 'auswertung') {
@@ -152,6 +154,10 @@
       renderAuswertung();
     } else {
       show('qr');
+      if (startFuer !== runde.uebung) {
+        Skizze.erstelle($('skizze-start'), uebung());
+        startFuer = runde.uebung;
+      }
       $('count').textContent = abgaben.length;
       $('count-label').textContent = abgaben.length === 1 ? 'Abgabe' : 'Abgaben';
       $('status-text').textContent = runde.status === 'open' ? 'Abgabe läuft' : 'Abgabe beendet';
@@ -176,6 +182,7 @@
     ansicht = 'qr';
     aktiv = 0;
     skizzeFuer = null;
+    startFuer = null;
     watch();
   }
 
