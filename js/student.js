@@ -183,7 +183,7 @@
 
       const kopf = kopfElement(a);
       const titel = document.createElement('strong');
-      titel.textContent = a.art === 'wahl' ? a.kopf.slice(0, 2) : `Aufgabe ${a.id}`;
+      titel.textContent = a.art === 'wahl' ? a.nummer : `Aufgabe ${a.id}`;
       kopf.appendChild(titel);
       if (frei) {
         const urteil = document.createElement('span');

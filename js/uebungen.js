@@ -66,7 +66,7 @@ const UEBUNGEN = {
       const gegenbeispiel = String.raw`$1+(-1)=0$, aber nicht $a=b=0$.`;
       return [
         {
-          id: 'a', art: 'wahl', pfeil: true, kopf: 'a) Wählen Sie den richtigen logischen Schluss aus:',
+          id: 'i', art: 'wahl', pfeil: true, nummer: 'i)', kopf: 'i) Wählen Sie den richtigen logischen Schluss aus:',
           vor: '$a+b=0$', luecke: '?', nach: '$a=b=0$',
           optionen: [
             { wert: 'l', anzeige: String.raw`$\Leftarrow$` },
@@ -77,13 +77,13 @@ const UEBUNGEN = {
           erklaerung: String.raw`Gegenbeispiel zu $\Rightarrow$: ` + gegenbeispiel,
         },
         {
-          id: 'b', art: 'wahl', kopf: 'b)', vorab: 'Ergänzen Sie die folgenden Sätze:',
+          id: 'ii', art: 'wahl', nummer: 'ii)', kopf: 'ii)', vorab: 'Ergänzen Sie die folgenden Sätze:',
           vor: '$a+b=0$ ist', luecke: '…', nach: 'Bedingung für $a=b=0$.',
           optionen: bedingung, richtig: 'n',
           erklaerung: 'Notwendig, denn aus $a=b=0$ folgt $a+b=0$. Nicht hinreichend: ' + gegenbeispiel,
         },
         {
-          id: 'c', art: 'wahl', kopf: 'c)',
+          id: 'iii', art: 'wahl', nummer: 'iii)', kopf: 'iii)',
           vor: '$a=b=0$ ist', luecke: '…', nach: 'Bedingung für $a+b=0$.',
           optionen: bedingung, richtig: 'h',
           erklaerung: 'Hinreichend, denn aus $a=b=0$ folgt $a+b=0$. Nicht notwendig: ' + gegenbeispiel,
