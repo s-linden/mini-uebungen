@@ -2,7 +2,13 @@
 const Skizze = (() => {
   const NS = 'http://www.w3.org/2000/svg';
   const KOPF = 15;
+  const SPITZE_ABSTAND = 6; // Pfeilspitzen enden kurz vor dem Eckpunkt
+  const SCHRIFT = 28;
   const SCHRITT_MS = 900;
+  // Maße der Formelschrift (KaTeX_Math kursiv) in em: Höhe, Breite; Versatz des Akzents nach rechts
+  const HOCH = 'bdfhklt';
+  const BREITE = { a: 0.529, b: 0.429, c: 0.433, d: 0.52, e: 0.465, f: 0.49, g: 0.477, h: 0.576 };
+  const VERSATZ = { a: 0.028, c: 0.056, d: 0.167, e: 0.056, f: 0.167, g: 0.028 };
   const warte = (ms) => new Promise((r) => setTimeout(r, ms));
 
   function neu(name, attribute, eltern) {
@@ -16,23 +22,28 @@ const Skizze = (() => {
     const laenge = Math.hypot(x2 - x1, y2 - y1);
     const ux = (x2 - x1) / laenge;
     const uy = (y2 - y1) / laenge;
-    const bx = x2 - ux * KOPF;
-    const by = y2 - uy * KOPF;
+    const sx = x2 - ux * SPITZE_ABSTAND;
+    const sy = y2 - uy * SPITZE_ABSTAND;
+    const bx = sx - ux * KOPF;
+    const by = sy - uy * KOPF;
     const g = neu('g', { class: klasse }, eltern);
     const linie = neu('line', { class: 'linie', x1, y1, x2: bx, y2: by }, g);
     const kopf = neu('polygon', {
       class: 'kopf',
-      points: `${x2},${y2} ${bx - uy * 6},${by + ux * 6} ${bx + uy * 6},${by - ux * 6}`,
+      points: `${sx},${sy} ${bx - uy * 5.5},${by + ux * 5.5} ${bx + uy * 5.5},${by - ux * 5.5}`,
     }, g);
-    return { g, linie, kopf, laenge: laenge - KOPF };
+    return { g, linie, kopf, laenge: laenge - KOPF - SPITZE_ABSTAND };
   }
 
-  // Buchstabe mit kleinem Vektorpfeil darüber
+  // Buchstabe mit Vektorpfeil darüber; Höhe und seitlicher Versatz richten sich nach dem Buchstaben.
   function marke(eltern, name, [x, y]) {
     const g = neu('g', { class: 'marke' }, eltern);
     neu('text', { x, y }, g).textContent = name;
-    neu('line', { class: 'marke-pfeil', x1: x - 7, y1: y - 21, x2: x + 6, y2: y - 21 }, g);
-    neu('polygon', { class: 'marke-kopf', points: `${x + 9},${y - 21} ${x + 3},${y - 24} ${x + 3},${y - 18}` }, g);
+    const hoehe = HOCH.includes(name) ? 0.694 : 0.431;
+    const my = y - hoehe * SCHRIFT - 8;
+    const mx = x + (VERSATZ[name] || 0) * SCHRIFT;
+    neu('line', { class: 'marke-pfeil', x1: mx - 8, y1: my, x2: mx + 5, y2: my }, g);
+    neu('polygon', { class: 'marke-kopf', points: `${mx + 9},${my} ${mx + 3},${my - 3} ${mx + 3},${my + 3}` }, g);
     return g;
   }
 
@@ -49,6 +60,7 @@ const Skizze = (() => {
     for (const v of Object.keys(uebung.vektoren)) {
       elemente[v] = { pfeil: pfeil(svg, ...ende(v), 'vektor'), marke: marke(svg, v, uebung.marken[v]) };
     }
+    for (const [cx, cy] of Object.values(uebung.punkte)) neu('circle', { class: 'punkt', cx, cy, r: 3.5 }, svg);
     const ueber = neu('g', {}, svg);
     let lauf = 0; // verhindert, dass eine alte Animation weiterläuft
 
@@ -69,7 +81,7 @@ const Skizze = (() => {
       elemente[v].marke.classList.add('im-weg');
       if (s < 0) {
         const [x, y] = uebung.marken[v];
-        neu('text', { class: 'minus', x: x - 15, y }, ueber).textContent = '−';
+        neu('text', { class: 'minus', x: x - ((BREITE[v] || 0.5) * SCHRIFT) / 2 - 11, y }, ueber).textContent = '−';
       }
       if (!animiert) return;
       p.kopf.animate([{ opacity: 0 }, { opacity: 0, offset: 0.85 }, { opacity: 1 }], { duration: SCHRITT_MS - 150 });

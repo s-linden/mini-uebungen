@@ -30,13 +30,25 @@
     const b = document.createElement('button');
     b.type = 'button';
     b.className = 'taste';
-    b.setAttribute('aria-label', `${s > 0 ? 'Plus' : 'Minus'} Vektor ${v}`);
-    Pruefung.setze(b, Pruefung.texTerme([{ s: s, v }]).replace(/^(?!-)/, '+'));
+    b.setAttribute('aria-label', `${s > 0 ? '' : 'Minus '}Vektor ${v}`);
+    Pruefung.setze(b, Pruefung.texTerme([{ s, v }]));
     b.onclick = () => {
       if (eingaben[aufgabe.id].length < MAX_TERME) eingaben[aufgabe.id].push({ s, v });
       anzeigen[aufgabe.id]();
     };
     return b;
+  }
+
+  // „Aufgabe 1: g aus a und b“, durchgehend fett
+  function frageFett(a) {
+    const s = document.createElement('strong');
+    const vektor = (v) => Pruefung.setze(document.createElement('span'), String.raw`\boldsymbol{\vec{${v}}}`);
+    s.append(`Aufgabe ${a.id}: `, vektor(a.ziel), ' aus ');
+    a.aus.forEach((v, i) => {
+      if (i) s.append(i === a.aus.length - 1 ? ' und ' : ', ');
+      s.append(vektor(v));
+    });
+    return s;
   }
 
   function baueFormular() {
@@ -49,8 +61,7 @@
 
       const kopf = document.createElement('div');
       kopf.className = 'aufgabe-kopf';
-      kopf.innerHTML = `<strong>Aufgabe ${a.id}</strong>`;
-      kopf.appendChild(Pruefung.setze(document.createElement('span'), Pruefung.texFrage(a)));
+      kopf.appendChild(frageFett(a));
 
       const zeile = document.createElement('div');
       zeile.className = 'gleichung';

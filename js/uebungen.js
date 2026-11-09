@@ -7,13 +7,15 @@
 const UEBUNGEN = {
   'vektoren-vieleck': {
     titel: 'Vektoren im Vieleck',
-    viewBox: '200 0 490 296',
+    viewBox: '25 8 610 345',
+    // Nur die Abhängigkeiten zwischen den Vektoren zählen; die Punkte sind so gewählt,
+    // dass die Pfeile an jedem Eckpunkt weit auseinanderlaufen.
     punkte: {
-      O: [440, 22],   // oben
-      R: [620, 92],   // rechts oben
-      U: [660, 258],  // unten rechts
-      L: [328, 258],  // unten links
-      W: [222, 140],  // links
+      O: [320, 30],   // oben
+      R: [590, 110],  // rechts oben
+      U: [560, 330],  // unten rechts
+      L: [130, 330],  // unten links
+      W: [50, 100],   // links
     },
     vektoren: {
       a: ['O', 'L'],
@@ -26,14 +28,14 @@ const UEBUNGEN = {
       h: ['O', 'W'],
     },
     marken: {
-      a: [378, 126],
-      b: [490, 154],
-      c: [482, 288],
-      d: [262, 226],
-      e: [527, 216],
-      f: [657, 170],
-      g: [546, 50],
-      h: [305, 80],
+      a: [231, 137],
+      b: [374, 199],
+      c: [345, 321],
+      d: [108, 218],
+      e: [312, 205],
+      f: [594, 232],
+      g: [447, 103],
+      h: [193, 105],
     },
     aufgaben: [
       { id: '1', ziel: 'g', aus: ['a', 'b'], weg: [['a', 1], ['b', 1]] },

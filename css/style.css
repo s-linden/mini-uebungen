@@ -296,3 +296,10 @@ button.klein { font-size: 0.95rem; padding: 0.4em 0.8em; }
 .antwort { grid-template-columns: clamp(7rem, 14vw, 13rem) 1fr 2.2ch; }
 .student.uebung main { place-items: normal; }
 .skizze-box.frei { position: static; }
+
+/* Beschriftung in derselben Schrift wie die Formeln, damit die Vektorpfeile exakt sitzen */
+.skizze text { font: italic 400 28px KaTeX_Math, "Times New Roman", serif; }
+.skizze .marke.ziel text, .skizze .marke.im-weg text { font-weight: 400; }
+.skizze text.minus { font: 400 28px "Times New Roman", serif; }
+.skizze .punkt { fill: var(--vektor); }
+.aufgabe-kopf strong { font-size: 1.08rem; }

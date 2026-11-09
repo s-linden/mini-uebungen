@@ -3,7 +3,7 @@
 Kurze Übungen im Hörsaal per QR-Code: Die Studierenden setzen ihre Antworten auf dem Handy zusammen, die Antworten werden am Beamer gemeinsam diskutiert, danach läuft der Lösungsweg durch die Skizze.
 
 1. **Beamer:** `index.html` zeigt einen QR-Code und zählt live die Abgaben.
-2. **Handy:** `uebung.html` zeigt die Skizze und die Aufgaben. Die Antwort wird aus den erlaubten Vektoren angetippt (`+a`, `−b`, …), Tippen von Formeln ist nicht nötig. Bis zum Ende der Abgabe lässt sich alles ändern. Pro Gerät zählt eine Abgabe.
+2. **Handy:** `uebung.html` zeigt die Skizze und die Aufgaben. Die Antwort wird aus den erlaubten Vektoren angetippt (`a`, `−b`, …), Tippen von Formeln ist nicht nötig. Bis zum Ende der Abgabe lässt sich alles ändern. Pro Gerät zählt eine Abgabe.
 3. **Auswertung:** Pro Aufgabe erscheinen alle abgegebenen Antworten nach Häufigkeit, zunächst neutral, damit die richtige Antwort nicht verraten wird.
 4. **Lösung zeigen:** beendet die Abgabe, färbt die Antworten grün/rot und spielt den Lösungsweg in der Skizze ab. Wird ein Vektor gegen seine Pfeilrichtung durchlaufen, erscheint er mit Minuszeichen. Erst jetzt sehen die Handys bei dieser Aufgabe, ob ihre Antwort stimmt.
 
