@@ -56,13 +56,12 @@
   const uebung = () => UEBUNGEN[runde.uebung];
   const freigegeben = (a) => (runde.freigegeben || []).includes(a.id);
 
-  function antwortZeile(tex, n, gesamt, klasse) {
+  function antwortZeile(inhalt, n, gesamt, klasse) {
     const zeile = document.createElement('div');
     zeile.className = 'antwort ' + klasse;
     const term = document.createElement('span');
     term.className = 'antwort-term';
-    if (tex.startsWith('text:')) term.textContent = tex.slice(5);
-    else Pruefung.setze(term, tex);
+    Pruefung.mix(term, inhalt);
     const spur = document.createElement('span');
     spur.className = 'spur';
     const fuellung = document.createElement('span');
@@ -93,7 +92,9 @@
     const a = ergebnis.aufgabe;
     const frei = freigegeben(a);
     renderNav();
-    Pruefung.setze($('frage'), Pruefung.texFrage(a));
+    Pruefung.mix($('frage'), Pruefung.frage(a));
+    // Lange Textantworten brauchen eine breitere Spalte.
+    $('antworten').classList.toggle('breit', a.art === 'wahl' && a.optionen.some((o) => !o.anzeige.startsWith('$')));
 
     $('zusammenfassung').textContent = frei
       ? `${ergebnis.richtig} von ${ergebnis.gesamt} richtig` + (ergebnis.gesamt ? ` (${Math.round((100 * ergebnis.richtig) / ergebnis.gesamt)} %)` : '')
@@ -108,12 +109,12 @@
     const sichtbar = liste.slice(0, MAX_ZEILEN);
     const rest = liste.slice(MAX_ZEILEN).reduce((s, x) => s + x.n, 0);
     const zeilen = sichtbar.map((x) =>
-      antwortZeile(Pruefung.texKurz(x.kurz), x.n, ergebnis.gesamt, frei ? (x.richtig ? 'richtig' : 'falsch') : ''));
-    if (rest) zeilen.push(antwortZeile('text:Weitere', rest, ergebnis.gesamt, 'neutral'));
-    if (ergebnis.keine) zeilen.push(antwortZeile('text:Keine Antwort', ergebnis.keine, ergebnis.gesamt, 'neutral'));
+      antwortZeile(Pruefung.anzeige(a, x.kurz), x.n, ergebnis.gesamt, frei ? (x.richtig ? 'richtig' : 'falsch') : ''));
+    if (rest) zeilen.push(antwortZeile('Weitere', rest, ergebnis.gesamt, 'neutral'));
+    if (ergebnis.keine) zeilen.push(antwortZeile('Keine Antwort', ergebnis.keine, ergebnis.gesamt, 'neutral'));
     $('antworten').replaceChildren(...zeilen);
 
-    if (frei) Pruefung.setze($('loesung'), Pruefung.texLoesung(a));
+    if (frei) Pruefung.mix($('loesung'), Pruefung.loesungSatz(a));
     else $('loesung').replaceChildren();
     $('btn-loesung').textContent = frei ? 'Noch einmal abspielen' : 'Lösung zeigen';
 
@@ -155,7 +156,7 @@
     } else {
       show('qr');
       if (startFuer !== runde.uebung) {
-        Skizze.erstelle($('skizze-start'), uebung());
+        Skizze.erstelle($('skizze-start'), uebung(), { frage: true });
         startFuer = runde.uebung;
       }
       $('count').textContent = abgaben.length;

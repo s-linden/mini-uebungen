@@ -120,6 +120,10 @@ const Backend = (() => {
     function testAntwort(a) {
       const zufall = Math.random();
       if (zufall < 0.1) return undefined;
+      if (a.art === 'wahl') {
+        if (zufall < 0.6) return a.richtig;
+        return a.optionen[Math.floor(Math.random() * a.optionen.length)].wert;
+      }
       const weg = a.weg.map(([v, s]) => ({ v, s }));
       if (zufall < 0.6) return Pruefung.normal(weg);
       const i = Math.floor(Math.random() * weg.length);

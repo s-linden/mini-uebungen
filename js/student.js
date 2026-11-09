@@ -1,4 +1,4 @@
-// Handy-Ansicht: Antworten aus Termen zusammensetzen, absenden, nach Freigabe Rückmeldung zeigen.
+// Handy-Ansicht: Antworten eingeben, absenden, nach Freigabe Rückmeldung zeigen.
 (async () => {
   const $ = (id) => document.getElementById(id);
   const code = new URLSearchParams(location.search).get('s');
@@ -7,13 +7,14 @@
   let uebung = null;
   let gesendet = null;       // zuletzt abgeschickte Antworten
   let bearbeiten = false;
-  const eingaben = {};       // Aufgabe → Terme in Eingabereihenfolge
-  const anzeigen = {};       // Aufgabe → Funktion, die die Eingabezeile neu zeichnet
+  const eingaben = {};       // Aufgabe → Terme in Eingabereihenfolge bzw. gewählte Option
+  const anzeigen = {};       // Aufgabe → Funktion, die die Eingabe neu zeichnet
 
   function show(view) {
     for (const v of ['loading', 'message', 'form', 'ergebnis']) $('view-' + v).hidden = v !== view;
     $('skizze-box').hidden = view !== 'form' && view !== 'ergebnis';
-    $('skizze-box').classList.toggle('frei', view === 'ergebnis'); // nur beim Eingeben oben festgepinnt
+    // Nur die Skizze beim Eingeben bleibt oben festgepinnt.
+    $('skizze-box').classList.toggle('frei', view === 'ergebnis' || (uebung && uebung.art === 'aussagen'));
   }
 
   function message(title, text) {
@@ -22,8 +23,11 @@
     show('message');
   }
 
+  // Antwort einer Aufgabe in der gespeicherten Kurzform; '' = noch nichts eingegeben
+  const kurzform = (a) => (a.art === 'wahl' ? eingaben[a.id] : Pruefung.normal(eingaben[a.id]));
+
   function aktualisiereKnopf() {
-    $('btn-submit').disabled = !uebung.aufgaben.some((a) => eingaben[a.id].length);
+    $('btn-submit').disabled = !uebung.aufgaben.some(kurzform);
   }
 
   function taste(aufgabe, s, v) {
@@ -51,47 +55,102 @@
     return s;
   }
 
+  function kopfElement(a) {
+    const kopf = document.createElement('div');
+    kopf.className = 'aufgabe-kopf';
+    return kopf;
+  }
+
+  function vektorKarte(a, karte) {
+    const kopf = kopfElement(a);
+    kopf.appendChild(frageFett(a));
+
+    const zeile = document.createElement('div');
+    zeile.className = 'gleichung';
+    zeile.appendChild(Pruefung.setze(document.createElement('span'), Pruefung.texZiel(a) + '='));
+    const terme = document.createElement('span');
+    terme.className = 'terme';
+    zeile.appendChild(terme);
+    const zurueck = document.createElement('button');
+    zurueck.type = 'button';
+    zurueck.className = 'zurueck';
+    zurueck.textContent = '⌫';
+    zurueck.setAttribute('aria-label', 'Letzten Term löschen');
+    zurueck.onclick = () => { eingaben[a.id].pop(); anzeigen[a.id](); };
+    zeile.appendChild(zurueck);
+
+    const tasten = document.createElement('div');
+    tasten.className = 'tasten';
+    for (const v of a.aus) {
+      tasten.appendChild(taste(a, 1, v));
+      tasten.appendChild(taste(a, -1, v));
+    }
+
+    anzeigen[a.id] = () => {
+      const t = eingaben[a.id];
+      zurueck.disabled = !t.length;
+      if (t.length) Pruefung.setze(terme, Pruefung.texTerme(t));
+      else terme.innerHTML = '<span class="muted">noch keine Eingabe</span>';
+      aktualisiereKnopf();
+    };
+    karte.append(kopf, zeile, tasten);
+  }
+
+  function wahlKarte(a, karte) {
+    const kopf = kopfElement(a);
+    const titel = document.createElement('strong');
+    titel.textContent = a.kopf;
+    kopf.appendChild(titel);
+
+    const zeile = document.createElement('div');
+    zeile.className = 'satz';
+    const luecke = document.createElement('span');
+    luecke.className = 'luecke';
+    zeile.append(Pruefung.mix(document.createElement('span'), a.vor), ' ', luecke, ' ', Pruefung.mix(document.createElement('span'), a.nach));
+
+    const optionen = document.createElement('div');
+    optionen.className = 'optionen' + (a.optionen.some((o) => !o.anzeige.startsWith('$')) ? ' text' : '');
+    const knoepfe = a.optionen.map((o) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'option';
+      Pruefung.mix(b, o.anzeige);
+      b.onclick = () => {
+        eingaben[a.id] = eingaben[a.id] === o.wert ? '' : o.wert; // erneutes Antippen hebt die Wahl auf
+        anzeigen[a.id]();
+      };
+      optionen.appendChild(b);
+      return b;
+    });
+
+    anzeigen[a.id] = () => {
+      const wert = eingaben[a.id];
+      a.optionen.forEach((o, i) => {
+        knoepfe[i].classList.toggle('gewaehlt', o.wert === wert);
+        knoepfe[i].setAttribute('aria-pressed', o.wert === wert);
+      });
+      Pruefung.mix(luecke, wert ? Pruefung.anzeige(a, wert) : a.luecke);
+      luecke.classList.toggle('gefuellt', !!wert);
+      aktualisiereKnopf();
+    };
+    karte.append(kopf, zeile, optionen);
+  }
+
   function baueFormular() {
     const box = $('aufgaben');
     box.replaceChildren();
-    for (const a of uebung.aufgaben) eingaben[a.id] = [];
+    for (const a of uebung.aufgaben) eingaben[a.id] = a.art === 'wahl' ? '' : [];
     for (const a of uebung.aufgaben) {
+      if (a.vorab) {
+        const p = document.createElement('p');
+        p.className = 'vorab';
+        p.textContent = a.vorab;
+        box.appendChild(p);
+      }
       const karte = document.createElement('div');
       karte.className = 'aufgabe';
-
-      const kopf = document.createElement('div');
-      kopf.className = 'aufgabe-kopf';
-      kopf.appendChild(frageFett(a));
-
-      const zeile = document.createElement('div');
-      zeile.className = 'gleichung';
-      zeile.appendChild(Pruefung.setze(document.createElement('span'), Pruefung.texZiel(a) + '='));
-      const terme = document.createElement('span');
-      terme.className = 'terme';
-      zeile.appendChild(terme);
-      const zurueck = document.createElement('button');
-      zurueck.type = 'button';
-      zurueck.className = 'zurueck';
-      zurueck.textContent = '⌫';
-      zurueck.setAttribute('aria-label', 'Letzten Term löschen');
-      zurueck.onclick = () => { eingaben[a.id].pop(); anzeigen[a.id](); };
-      zeile.appendChild(zurueck);
-
-      const tasten = document.createElement('div');
-      tasten.className = 'tasten';
-      for (const v of a.aus) {
-        tasten.appendChild(taste(a, 1, v));
-        tasten.appendChild(taste(a, -1, v));
-      }
-
-      anzeigen[a.id] = () => {
-        const t = eingaben[a.id];
-        zurueck.disabled = !t.length;
-        if (t.length) Pruefung.setze(terme, Pruefung.texTerme(t));
-        else terme.innerHTML = '<span class="muted">noch keine Eingabe</span>';
-        aktualisiereKnopf();
-      };
-      karte.append(kopf, zeile, tasten);
+      if (a.art === 'wahl') wahlKarte(a, karte);
+      else vektorKarte(a, karte);
       box.appendChild(karte);
       anzeigen[a.id]();
     }
@@ -99,7 +158,7 @@
 
   function setzeEingaben(antworten) {
     for (const a of uebung.aufgaben) {
-      eingaben[a.id] = Pruefung.terme(antworten[a.id]);
+      eingaben[a.id] = a.art === 'wahl' ? (antworten[a.id] || '') : Pruefung.terme(antworten[a.id]);
       anzeigen[a.id]();
     }
   }
@@ -122,9 +181,10 @@
       const karte = document.createElement('div');
       karte.className = 'aufgabe' + (frei ? (richtig ? ' richtig' : ' falsch') : '');
 
-      const kopf = document.createElement('div');
-      kopf.className = 'aufgabe-kopf';
-      kopf.innerHTML = `<strong>Aufgabe ${a.id}</strong>`;
+      const kopf = kopfElement(a);
+      const titel = document.createElement('strong');
+      titel.textContent = a.art === 'wahl' ? a.kopf.slice(0, 2) : `Aufgabe ${a.id}`;
+      kopf.appendChild(titel);
       if (frei) {
         const urteil = document.createElement('span');
         urteil.className = 'urteil';
@@ -133,21 +193,19 @@
       }
 
       const zeile = document.createElement('div');
-      zeile.className = 'gleichung';
-      if (antwort) {
-        Pruefung.setze(zeile, `${Pruefung.texZiel(a)}=${Pruefung.texKurz(antwort)}`);
-      } else {
-        zeile.innerHTML = '<span class="muted">Keine Antwort abgegeben</span>';
-      }
+      zeile.className = a.art === 'wahl' ? 'satz' : 'gleichung';
+      if (antwort) Pruefung.mix(zeile, Pruefung.satz(a, antwort));
+      else zeile.innerHTML = '<span class="muted">Keine Antwort abgegeben</span>';
       karte.append(kopf, zeile);
 
       if (frei && !richtig) {
         const l = document.createElement('div');
         l.className = 'loesung';
         l.append('Lösung: ');
-        l.appendChild(Pruefung.setze(document.createElement('span'), Pruefung.texLoesung(a)));
+        l.appendChild(Pruefung.mix(document.createElement('span'), Pruefung.loesungSatz(a)));
         karte.appendChild(l);
       }
+      if (frei && a.erklaerung) karte.appendChild(Pruefung.mix(Object.assign(document.createElement('div'), { className: 'erklaerung-klein' }), a.erklaerung));
       box.appendChild(karte);
     }
     show('ergebnis');
@@ -159,7 +217,9 @@
       uebung = UEBUNGEN[runde.uebung];
       if (!uebung) return message('Unbekannte Übung', 'Bitte laden Sie die Seite neu.');
       document.title = uebung.titel;
-      Skizze.erstelle($('skizze-box'), uebung);
+      $('form-hint').textContent = uebung.hinweis;
+      $('form-hint').hidden = !uebung.hinweis;
+      Skizze.erstelle($('skizze-box'), uebung, { kompakt: true });
       baueFormular();
       if (gesendet) setzeEingaben(gesendet);
     }
@@ -170,7 +230,7 @@
   $('btn-submit').onclick = async () => {
     const antworten = {};
     for (const a of uebung.aufgaben) {
-      const kurz = Pruefung.normal(eingaben[a.id]);
+      const kurz = kurzform(a);
       if (kurz) antworten[a.id] = kurz;
     }
     $('btn-submit').disabled = true;

@@ -314,3 +314,43 @@ button.klein { font-size: 0.95rem; padding: 0.4em 0.8em; }
 .start-zaehler .count-label { font-size: clamp(1.2rem, 2.2vw, 2rem); }
 .start-zaehler .preview { margin: 0; }
 @media (max-width: 800px) { .teacher #view-qr { grid-template-columns: 1fr; } }
+
+/* Übungen mit Aussagen: „a+b=0  ⇐ ⇒ ⇔  a=b=0“ */
+.aussagen { display: grid; gap: 1rem; padding: clamp(0.6rem, 2vw, 1.5rem); text-align: center; font-size: clamp(1.3rem, 2.4vw, 2rem); }
+.vorspann { text-align: left; }
+.aussage-zeile { display: flex; justify-content: center; align-items: center; gap: clamp(1rem, 3vw, 2.5rem); font-size: 1.35em; }
+.pfeile { display: grid; gap: 0.25em; }
+.pfeil { padding: 0 0.3em; border-radius: 8px; transition: opacity 0.5s ease, color 0.5s ease, background 0.5s ease; }
+.aufgeloest .pfeil { opacity: 0.2; }
+.aufgeloest .pfeil.richtig { opacity: 1; color: var(--richtig); background: #dcfce7; }
+.bewegt .pfeil.richtig { animation: pfeil-auftritt 0.7s ease; }
+@keyframes pfeil-auftritt { 0% { transform: scale(1); } 45% { transform: scale(1.5); } 100% { transform: scale(1); } }
+.erklaerung { min-height: 1.4em; font-size: 0.85em; color: var(--text); }
+.bewegt .erklaerung { animation: einblenden 0.7s ease 0.3s backwards; }
+@keyframes einblenden { from { opacity: 0; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .bewegt .pfeil.richtig, .bewegt .erklaerung { animation: none; } }
+.student .aussagen { font-size: 1.15rem; padding: 0.4rem 0 0; }
+
+/* Auswahlaufgaben auf dem Handy */
+.vorab { margin: 0.5rem 0 -0.2rem; font-weight: 700; }
+.satz { font-size: 1.15rem; line-height: 1.7; margin: 0.4rem 0 0.6rem; }
+.luecke { display: inline-block; min-width: 2.2em; padding: 0 0.4em; text-align: center; border-bottom: 2px solid var(--muted); color: var(--muted); }
+.luecke.gefuellt { color: var(--accent); border-bottom-color: var(--accent); font-weight: 600; }
+.optionen { display: grid; grid-template-columns: repeat(auto-fit, minmax(5rem, 1fr)); gap: 0.4rem; }
+.option { min-height: 2.9rem; padding: 0.4em 0.5em; font-size: 1.1rem; touch-action: manipulation; }
+.option.gewaehlt { background: var(--accent); border-color: var(--accent); color: var(--accent-text); }
+.erklaerung-klein { margin-top: 0.3rem; font-size: 0.98rem; color: var(--muted); }
+
+/* Beamer: Textantworten */
+.antworten.breit .antwort { grid-template-columns: minmax(0, 17rem) 1fr 2.2ch; font-size: clamp(1rem, 1.6vw, 1.35rem); }
+.loesung-gross { flex: 1 1 14rem; min-width: 0; }
+.optionen.text { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.optionen.text .option { font-size: 1rem; }
+
+/* Formeln nicht in sich umbrechen */
+.aussage .katex, .frage .katex, .loesung-gross .katex, .satz .katex, .erklaerung .katex { white-space: nowrap; }
+.aussage { white-space: nowrap; }
+.aussage-zeile { font-size: 1.15em; }
+.pfeile { position: relative; }
+.aussage-zeile.mit-frage { margin-bottom: 1.5em; }
+.pfeil-frage { position: absolute; top: 100%; left: 0; right: 0; color: var(--falsch); font-weight: 800; font-size: 1.25em; line-height: 1.3; }

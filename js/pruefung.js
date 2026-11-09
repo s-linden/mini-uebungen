@@ -34,6 +34,7 @@ const Pruefung = (() => {
 
   // Daten kommen von fremden Geräten: nur Antworten aus den erlaubten Vektoren zählen.
   function gueltig(aufgabe, kurz) {
+    if (aufgabe.art === 'wahl') return aufgabe.optionen.some((o) => o.wert === kurz);
     if (kurz === '0') return true;
     return /^(?:[+-]\d{0,2}[a-z])+$/.test(kurz) && zerlege(kurz).every(({ v }) => aufgabe.aus.includes(v));
   }
@@ -50,7 +51,14 @@ const Pruefung = (() => {
   const texZiel = (a) => vek(a.ziel);
   const texFrage = (a) => vek(a.ziel) + String.raw`\text{ aus }` + liste(a.aus);
   const texLoesung = (a) => `${vek(a.ziel)}=${texTerme(ausWeg(a))}`;
-  const loesung = (a) => normal(ausWeg(a));
+  const loesung = (a) => (a.art === 'wahl' ? a.richtig : normal(ausWeg(a)));
+
+  // Anzeigen für beide Aufgabenarten, als Text mit Formeln zwischen $…$
+  const option = (a, kurz) => a.optionen.find((o) => o.wert === kurz).anzeige;
+  const anzeige = (a, kurz) => (a.art === 'wahl' ? option(a, kurz) : `$${texKurz(kurz)}$`);
+  const frage = (a) => (a.art === 'wahl' ? `${a.vor} ${a.luecke} ${a.nach}` : `$${texFrage(a)}$`);
+  const satz = (a, kurz) => (a.art === 'wahl' ? `${a.vor} ${option(a, kurz)} ${a.nach}` : `$${texZiel(a)}=${texKurz(kurz)}$`);
+  const loesungSatz = (a) => (a.art === 'wahl' ? satz(a, a.richtig) : `$${texLoesung(a)}$`);
 
   // Ergebnis je Aufgabe: Antworten nach Häufigkeit, die richtige Antwort ist markiert.
   function auszaehlen(uebung, abgaben) {
@@ -76,5 +84,17 @@ const Pruefung = (() => {
     return el;
   }
 
-  return { normal, terme, gueltig, texTerme, texKurz, texZiel, texFrage, texLoesung, loesung, auszaehlen, setze };
+  // Text mit Formeln zwischen $…$ in ein Element schreiben
+  function mix(el, text) {
+    el.replaceChildren();
+    let pos = 0;
+    for (const m of text.matchAll(/\$([^$]+)\$/g)) {
+      el.append(text.slice(pos, m.index), setze(document.createElement('span'), m[1]));
+      pos = m.index + m[0].length;
+    }
+    el.append(text.slice(pos));
+    return el;
+  }
+
+  return { normal, terme, gueltig, texTerme, texZiel, texFrage, loesung, anzeige, frage, satz, loesungSatz, auszaehlen, setze, mix };
 })();

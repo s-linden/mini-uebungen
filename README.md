@@ -11,7 +11,9 @@ Die Reihenfolge der Terme spielt keine Rolle: `−c + b` und `b − c` zählen a
 
 ## Neue Miniübung ergänzen
 
-Alle Übungen stehen in [`js/uebungen.js`](js/uebungen.js): Punkte der Skizze, Vektoren (Start- und Endpunkt), Position der Beschriftungen und je Aufgabe der Lösungsweg. Sobald es mehr als eine Übung gibt, erscheint am Beamer eine Auswahl.
+Alle Übungen stehen in [`js/uebungen.js`](js/uebungen.js), die Auswahl dazu erscheint am Beamer. Es gibt zwei Arten:
+- **Vektor-Übung:** Punkte der Skizze, Vektoren (Start- und Endpunkt), Position der Beschriftungen und je Aufgabe der Lösungsweg.
+- **Aussagen-Übung** (`art: 'aussagen'`): Auswahlaufgaben mit Optionen, richtiger Antwort und Erklärung, die bei der Lösung erscheint.
 
 ## Ausprobieren ohne Einrichtung (Demo-Modus)
 

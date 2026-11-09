@@ -7,6 +7,7 @@
 const UEBUNGEN = {
   'vektoren-vieleck': {
     titel: 'Addition und Subtraktion von Vektoren',
+    hinweis: 'Bestimmen Sie die Vektoren. Wählen Sie die passenden Summanden durch Antippen nacheinander aus.',
     viewBox: '25 8 610 345',
     // Nur die Abhängigkeiten zwischen den Vektoren zählen; die Punkte sind so gewählt,
     // dass die Pfeile an jedem Eckpunkt weit auseinanderlaufen.
@@ -43,5 +44,51 @@ const UEBUNGEN = {
       { id: '3', ziel: 'e', aus: ['c', 'd'], weg: [['c', -1], ['d', 1]] },
       { id: '4', ziel: 'e', aus: ['f', 'g', 'h'], weg: [['f', 1], ['g', -1], ['h', 1]] },
     ],
+  },
+
+  // Übung mit Auswahlaufgaben (art: 'aussagen', Aufgaben mit art: 'wahl'). Texte enthalten Formeln zwischen $…$.
+  //   vor, nach: Satzteile vor und hinter der Lücke; luecke: Platzhalter vor der Auflösung
+  //   pfeil: true = die Optionen stehen als Pfeilspalte auf dem Startbildschirm
+  'logischer-schluss': {
+    titel: 'Notwendige und hinreichende Bedingung',
+    art: 'aussagen',
+    hinweis: '',
+    vorspann: String.raw`Seien $a, b \in \mathbb{R}$.`,
+    links: '$a+b=0$',
+    rechts: '$a=b=0$',
+    aufgaben: (() => {
+      const bedingung = [
+        { wert: 'k', anzeige: 'keine' },
+        { wert: 'n', anzeige: 'eine notwendige' },
+        { wert: 'h', anzeige: 'eine hinreichende' },
+        { wert: 'b', anzeige: 'eine notwendige und hinreichende' },
+      ];
+      const gegenbeispiel = String.raw`$1+(-1)=0$, aber nicht $a=b=0$.`;
+      return [
+        {
+          id: 'a', art: 'wahl', pfeil: true, kopf: 'a) Wählen Sie den richtigen logischen Schluss aus:',
+          vor: '$a+b=0$', luecke: '?', nach: '$a=b=0$',
+          optionen: [
+            { wert: 'l', anzeige: String.raw`$\Leftarrow$` },
+            { wert: 'r', anzeige: String.raw`$\Rightarrow$` },
+            { wert: 'b', anzeige: String.raw`$\Leftrightarrow$` },
+          ],
+          richtig: 'l',
+          erklaerung: String.raw`Gegenbeispiel zu $\Rightarrow$: ` + gegenbeispiel,
+        },
+        {
+          id: 'b', art: 'wahl', kopf: 'b)', vorab: 'Ergänzen Sie die folgenden Sätze:',
+          vor: '$a+b=0$ ist', luecke: '…', nach: 'Bedingung für $a=b=0$.',
+          optionen: bedingung, richtig: 'n',
+          erklaerung: 'Notwendig, denn aus $a=b=0$ folgt $a+b=0$. Nicht hinreichend: ' + gegenbeispiel,
+        },
+        {
+          id: 'c', art: 'wahl', kopf: 'c)',
+          vor: '$a=b=0$ ist', luecke: '…', nach: 'Bedingung für $a+b=0$.',
+          optionen: bedingung, richtig: 'h',
+          erklaerung: 'Hinreichend, denn aus $a=b=0$ folgt $a+b=0$. Nicht notwendig: ' + gegenbeispiel,
+        },
+      ];
+    })(),
   },
 };
