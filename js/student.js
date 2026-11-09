@@ -205,7 +205,6 @@
         l.appendChild(Pruefung.mix(document.createElement('span'), Pruefung.loesungSatz(a)));
         karte.appendChild(l);
       }
-      if (frei && a.erklaerung) karte.appendChild(Pruefung.mix(Object.assign(document.createElement('div'), { className: 'erklaerung-klein' }), a.erklaerung));
       box.appendChild(karte);
     }
     show('ergebnis');

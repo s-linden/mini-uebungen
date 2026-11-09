@@ -354,3 +354,26 @@ button.klein { font-size: 0.95rem; padding: 0.4em 0.8em; }
 .pfeile { position: relative; }
 .aussage-zeile.mit-frage { margin-bottom: 1.5em; }
 .pfeil-frage { position: absolute; top: 100%; left: 0; right: 0; color: var(--falsch); font-weight: 800; font-size: 1.25em; line-height: 1.3; }
+
+/* Begründung bei der Lösung: je Richtung, ob sie gilt und warum */
+.kasten {
+  display: grid; grid-template-columns: auto auto minmax(0, 1fr); gap: 0.45em 1em; align-items: center;
+  text-align: left; font-size: 0.72em; border-top: 2px solid var(--border); padding-top: 0.8em;
+  visibility: hidden;
+}
+.begruendet .kasten { visibility: visible; }
+.bewegt .kasten { animation: einblenden 0.7s ease 0.3s backwards; }
+.kasten-richtung { white-space: nowrap; }
+.kasten-urteil { font-weight: 700; white-space: nowrap; }
+.kasten-urteil.ja { color: var(--richtig); }
+.kasten-urteil.nein { color: var(--falsch); }
+.kasten .katex { white-space: nowrap; }
+@media (prefers-reduced-motion: reduce) { .bewegt .kasten { animation: none; } }
+.kasten { display: none; visibility: visible; }
+.begruendet .kasten { display: grid; }
+.kasten { font-size: 0.64em; gap: 0.5em 0.9em; grid-template-columns: auto auto auto; justify-content: start; }
+.kasten-grund { white-space: pre-line; }
+.kasten-grund .katex { white-space: nowrap; }
+.kasten { font-size: 0.7em; grid-template-columns: auto auto; gap: 0.2em 1.2em; }
+.kasten-grund { grid-column: 1 / -1; white-space: nowrap; padding-left: 1em; color: var(--muted); margin-bottom: 0.5em; }
+.kasten-grund:last-child { margin-bottom: 0; }

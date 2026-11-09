@@ -18,7 +18,12 @@ const Aussagen = (() => {
     Pruefung.mix(neu('aussage', zeile), uebung.links);
     const spalte = neu('pfeile', zeile);
     Pruefung.mix(neu('aussage', zeile), uebung.rechts);
-    const erklaerung = neu('erklaerung', wurzel);
+    const kasten = neu('kasten', wurzel);
+    for (const { richtung, gilt, grund } of uebung.begruendung || []) {
+      Pruefung.mix(neu('kasten-richtung', kasten), richtung);
+      neu('kasten-urteil ' + (gilt ? 'ja' : 'nein'), kasten).textContent = gilt ? '✓ gilt' : '✗ gilt nicht';
+      Pruefung.mix(neu('kasten-grund', kasten), grund);
+    }
 
     const pfeile = {};
     const pfeilAufgabe = uebung.aufgaben.find((a) => a.pfeil);
@@ -29,8 +34,7 @@ const Aussagen = (() => {
     }
 
     function zuruecksetzen() {
-      wurzel.classList.remove('aufgeloest', 'bewegt');
-      erklaerung.replaceChildren();
+      wurzel.classList.remove('aufgeloest', 'begruendet', 'bewegt');
       for (const p of Object.values(pfeile)) p.classList.remove('richtig');
     }
 
@@ -42,7 +46,7 @@ const Aussagen = (() => {
         wurzel.classList.add('aufgeloest');
         pfeile[aufgabe.richtig].classList.add('richtig');
       }
-      Pruefung.mix(erklaerung, aufgabe.erklaerung);
+      wurzel.classList.add('begruendet');
     }
 
     return { zuruecksetzen, zeigeWeg };

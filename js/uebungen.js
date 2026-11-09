@@ -56,6 +56,11 @@ const UEBUNGEN = {
     vorspann: String.raw`Seien $a, b \in \mathbb{R}$.`,
     links: '$a+b=0$',
     rechts: '$a=b=0$',
+    // Kasten, der bei der Lösung erscheint: gilt die jeweilige Richtung, und warum (nicht)?
+    begruendung: [
+      { richtung: String.raw`$a=b=0 \Rightarrow a+b=0$`, gilt: true, grund: '$0+0=0$' },
+      { richtung: String.raw`$a+b=0 \Rightarrow a=b=0$`, gilt: false, grund: String.raw`Gegenbeispiel: $a=1,\ b=-1$ ergibt $a+b=0$` },
+    ],
     aufgaben: (() => {
       const bedingung = [
         { wert: 'k', anzeige: 'keine' },
@@ -63,7 +68,6 @@ const UEBUNGEN = {
         { wert: 'h', anzeige: 'eine hinreichende' },
         { wert: 'b', anzeige: 'eine notwendige und hinreichende' },
       ];
-      const gegenbeispiel = String.raw`$1+(-1)=0$, aber nicht $a=b=0$.`;
       return [
         {
           id: 'i', art: 'wahl', pfeil: true, nummer: 'i)', kopf: 'i) Wählen Sie den richtigen logischen Schluss aus:',
@@ -74,19 +78,16 @@ const UEBUNGEN = {
             { wert: 'b', anzeige: String.raw`$\Leftrightarrow$` },
           ],
           richtig: 'l',
-          erklaerung: String.raw`Gegenbeispiel zu $\Rightarrow$: ` + gegenbeispiel,
         },
         {
           id: 'ii', art: 'wahl', nummer: 'ii)', kopf: 'ii)', vorab: 'Ergänzen Sie die folgenden Sätze:',
           vor: '$a+b=0$ ist', luecke: '…', nach: 'Bedingung für $a=b=0$.',
           optionen: bedingung, richtig: 'n',
-          erklaerung: 'Notwendig, denn aus $a=b=0$ folgt $a+b=0$. Nicht hinreichend: ' + gegenbeispiel,
         },
         {
           id: 'iii', art: 'wahl', nummer: 'iii)', kopf: 'iii)',
           vor: '$a=b=0$ ist', luecke: '…', nach: 'Bedingung für $a+b=0$.',
           optionen: bedingung, richtig: 'h',
-          erklaerung: 'Hinreichend, denn aus $a=b=0$ folgt $a+b=0$. Nicht notwendig: ' + gegenbeispiel,
         },
       ];
     })(),
