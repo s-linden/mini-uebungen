@@ -1,0 +1,39 @@
+rules_version = '2';
+
+// Regeln für die Miniübungen.
+// In der Firebase-Konsole unter Firestore Database → Regeln einfügen und veröffentlichen.
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /runden/{code} {
+      function signedIn() { return request.auth != null; }
+      function runde() { return get(/databases/$(database)/documents/runden/$(code)).data; }
+
+      // Jede angemeldete (auch anonyme) Person darf eine Runde lesen, wenn sie den Code kennt.
+      allow get: if signedIn();
+      // Nur die Lehrperson, die die Runde angelegt hat, darf sie ändern.
+      allow create: if signedIn()
+        && request.resource.data.owner == request.auth.uid
+        && request.resource.data.status == 'open'
+        && request.resource.data.uebung is string;
+      allow update: if signedIn()
+        && resource.data.owner == request.auth.uid
+        && request.resource.data.owner == resource.data.owner;
+      allow delete: if signedIn() && resource.data.owner == request.auth.uid;
+
+      // Jedes Gerät hat genau eine Abgabe (Dokument-ID = eigene Kennung) und darf sie ändern,
+      // solange die Abgabe läuft. Alle Abgaben sieht nur die Lehrperson.
+      match /abgaben/{uid} {
+        allow get: if signedIn() && (request.auth.uid == uid || runde().owner == request.auth.uid);
+        allow list: if signedIn() && runde().owner == request.auth.uid;
+        allow create, update: if signedIn()
+          && request.auth.uid == uid
+          && runde().status == 'open'
+          && request.resource.data.keys().hasOnly(['antworten', 'at'])
+          && request.resource.data.antworten is map
+          && request.resource.data.antworten.size() > 0
+          && request.resource.data.antworten.size() <= 20
+          && request.resource.data.at == request.time;
+      }
+    }
+  }
+}

@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Miniübung</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="student uebung">
+  <main>
+    <section id="view-loading" class="card"><p class="muted">Lade Übung …</p></section>
+
+    <section id="view-message" class="card" hidden>
+      <h1 id="msg-title"></h1>
+      <p id="msg-text"></p>
+    </section>
+
+    <div id="skizze-box" class="skizze-box" hidden></div>
+
+    <section id="view-form" hidden>
+      <p class="muted form-hint">Bestimmen Sie die Vektoren. Tippen Sie die Terme nacheinander an.</p>
+      <div id="aufgaben" class="aufgaben"></div>
+      <div class="submit-bar">
+        <p id="submit-error" class="submit-error" role="alert" hidden></p>
+        <button id="btn-submit" class="primary big" disabled>Antworten absenden</button>
+      </div>
+    </section>
+
+    <section id="view-ergebnis" hidden>
+      <h1 id="ergebnis-titel" class="ergebnis-titel"></h1>
+      <p id="ergebnis-text" class="muted"></p>
+      <div id="ergebnis" class="aufgaben"></div>
+      <button id="btn-edit" class="edit">Antworten ändern</button>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/uebungen.js"></script>
+  <script src="js/pruefung.js"></script>
+  <script src="js/skizze.js"></script>
+  <script src="js/backend.js"></script>
+  <script src="js/student.js"></script>
+</body>
+</html>

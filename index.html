@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Miniübung</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="teacher">
+  <header class="bar">
+    <h1>Miniübung: <span id="titel"></span></h1>
+    <div class="bar-actions">
+      <select id="uebung" aria-label="Übung" hidden></select>
+      <button id="btn-toggle" class="ghost">Auswertung</button>
+      <button id="btn-fullscreen" class="ghost">Vollbild</button>
+      <button id="btn-new" class="ghost">Neue Runde</button>
+    </div>
+  </header>
+
+  <div id="demo-banner" class="demo" hidden>
+    <strong>Demo-Modus:</strong> läuft nur in diesem Browser.
+    <a id="demo-phone" target="_blank" rel="noopener">Handy-Ansicht in neuem Tab öffnen</a>
+    <button id="btn-fake" class="small">+5 Test-Abgaben</button>
+  </div>
+
+  <main>
+    <section id="view-loading" class="center"><p class="muted">Verbinde …</p></section>
+
+    <section id="view-error" class="center" hidden>
+      <p id="error-text" class="error"></p>
+    </section>
+
+    <section id="view-qr" class="open-grid" hidden>
+      <div class="qr-panel">
+        <div id="qr" class="qr"></div>
+        <p class="join-hint">Mit dem Handy scannen oder öffnen:<br><span id="join-url" class="join-url"></span></p>
+        <p class="join-code">Code <span id="join-code"></span></p>
+      </div>
+      <div class="count-panel">
+        <div id="count" class="count">0</div>
+        <div id="count-label" class="count-label">Abgaben</div>
+        <p id="status-text" class="preview"></p>
+        <button id="btn-auswertung" class="primary big">Zur Auswertung</button>
+      </div>
+    </section>
+
+    <section id="view-auswertung" class="auswertung-grid" hidden>
+      <div id="skizze-gross" class="skizze-gross"></div>
+      <div class="panel">
+        <div class="panel-kopf">
+          <nav id="nav" class="nav" aria-label="Aufgabe wählen"></nav>
+          <button id="btn-abgabe" class="klein"></button>
+        </div>
+        <p id="frage" class="frage"></p>
+        <p id="zusammenfassung" class="zusammenfassung"></p>
+        <div id="antworten" class="antworten"></div>
+        <div class="panel-fuss">
+          <div id="loesung" class="loesung-gross"></div>
+          <button id="btn-loesung" class="primary">Lösung zeigen</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/uebungen.js"></script>
+  <script src="js/pruefung.js"></script>
+  <script src="js/skizze.js"></script>
+  <script src="js/backend.js"></script>
+  <script src="js/teacher.js"></script>
+</body>
+</html>
