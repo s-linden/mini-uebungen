@@ -419,3 +419,11 @@ button.klein { font-size: 0.95rem; padding: 0.4em 0.8em; }
 .antworten.breit .antwort-term { white-space: normal; }
 .paare .paar-titel { font-size: 0.9em; }
 .vorzeichen { margin-top: 0.5rem; font-size: 1rem; padding: 0.35em 0.9em; min-height: 2.6rem; touch-action: manipulation; }
+.paare { gap: 0.55rem; }
+.paar-liste { gap: 0.1em; }
+/* Kopfzeile einzeilig halten, auch bei langem Titel */
+.teacher .bar { flex-wrap: nowrap; }
+.teacher .bar h1 { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.teacher .bar-actions { flex-wrap: nowrap; flex: none; }
+.teacher .bar select { max-width: 13rem; }
+@media (max-width: 800px) { .teacher .bar { flex-wrap: wrap; } .teacher .bar-actions { flex-wrap: wrap; } }

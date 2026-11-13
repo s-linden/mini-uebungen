@@ -55,10 +55,11 @@ const Paare = (() => {
       liste.className = 'paar-liste';
       for (const a of uebung.aufgaben) {
         const z = document.createElement('div');
-        z.append(Object.assign(document.createElement('strong'), { textContent: a.nummer + ' ' }), a.eigenschaft);
+        z.append(Object.assign(document.createElement('strong'), { textContent: a.nummer + ' ' }), a.liste || a.eigenschaft);
         liste.appendChild(z);
       }
       wurzel.appendChild(liste);
+      if (uebung.nachsatz) wurzel.appendChild(Object.assign(document.createElement('div'), { className: 'vorspann', textContent: uebung.nachsatz }));
       return leer;
     }
 

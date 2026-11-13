@@ -62,6 +62,7 @@ const Pruefung = (() => {
     switch (aufgabe.test) {
       case 'orthogonal': return skalar === 0 ? 'ok' : 'nicht-orthogonal';
       case 'parallel': return det !== 0 ? 'unabhaengig' : skalar > 0 ? 'ok' : 'entgegengesetzt';
+      case 'antiparallel': return det !== 0 ? 'unabhaengig' : skalar < 0 ? 'ok' : 'gleichgerichtet';
       case 'abhaengig': return det === 0 ? 'ok' : 'unabhaengig';
       case 'unabhaengig': return det !== 0 ? 'ok' : 'abhaengig';
     }
@@ -70,11 +71,12 @@ const Pruefung = (() => {
   const KATEGORIEN = {
     'null': 'Nullvektor verwendet',
     'nicht-orthogonal': 'nicht orthogonal',
-    'entgegengesetzt': String.raw`linear abhängig, aber entgegengesetzt ($s<0$)`,
+    'entgegengesetzt': String.raw`antiparallel ($s<0$)`,
+    'gleichgerichtet': String.raw`parallel ($s>0$)`,
     'unabhaengig': 'linear unabhängig',
     'abhaengig': 'linear abhängig',
   };
-  const RICHTIG = { orthogonal: 'orthogonal', parallel: 'parallel', abhaengig: 'linear abhängig', unabhaengig: 'linear unabhängig' };
+  const RICHTIG = { orthogonal: 'orthogonal', parallel: 'parallel', antiparallel: 'antiparallel', abhaengig: 'linear abhängig', unabhaengig: 'linear unabhängig' };
   const kategorieText = (a, key) => (key === 'ok' ? RICHTIG[a.test] : KATEGORIEN[key]);
   const zahlTex = (x) => String(x).replace('.', '{,}');
   const paarTex = (p) => {

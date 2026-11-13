@@ -128,6 +128,7 @@ const Backend = (() => {
         const richtigesB = {
           orthogonal: [-u[1] * k, u[0] * k],
           parallel: [u[0] * k, u[1] * k],
+          antiparallel: [u[0] * -k, u[1] * -k],
           abhaengig: [u[0] * -k, u[1] * -k],
           unabhaengig: [u[1] + 1, -u[0] + 2],
         }[a.test];

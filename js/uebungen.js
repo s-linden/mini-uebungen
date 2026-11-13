@@ -97,18 +97,21 @@ const UEBUNGEN = {
   //   test: welche Eigenschaft geprüft wird (siehe Pruefung.kategorie); beispiel: wird bei der Lösung gezeigt
   //   beobachtung: bei der Lösung zeigen, wie viele richtige Paare auch eine andere Teilaufgabe erfüllen
   'vektorpaare': {
-    titel: 'Orthogonal, parallel, linear (un)abhängig',
+    titel: 'Orthogonal, (anti)parallel, linear (un)abhängig',
     art: 'paare',
     // Klick auf „Auswertung“ beendet die Abgabe und gibt alle Teilaufgaben frei (Rückmeldung sofort auf den Handys)
     freigabeBeiAuswertung: true,
+    // Startbildschirm: Auflistung mit „liste“ der Teilaufgaben, danach dieser Satzschluss
+    nachsatz: 'sind.',
     hinweis: '',
     vorspann: String.raw`Geben Sie zwei Vektoren $\vec{a}, \vec{b} \in \mathbb{R}^2$ mit $\vec{a}, \vec{b} \neq \vec{0}$ an, die`,
-    // „parallel“ wie im Skript: a = s·b mit s > 0
+    // „parallel“ wie im Skript: a = s·b mit s > 0; „antiparallel“: a = s·b mit s < 0
     aufgaben: [
-      { id: 'i', art: 'paar', nummer: 'i)', eigenschaft: 'orthogonal sind', test: 'orthogonal', beispiel: [[1, 2], [-2, 1]], beobachtung: 'iv' },
-      { id: 'ii', art: 'paar', nummer: 'ii)', eigenschaft: 'parallel sind', test: 'parallel', beispiel: [[1, 2], [2, 4]], beobachtung: 'iii' },
-      { id: 'iii', art: 'paar', nummer: 'iii)', eigenschaft: 'linear abhängig sind', test: 'abhaengig', beispiel: [[1, 2], [-1, -2]], beobachtung: 'ii' },
-      { id: 'iv', art: 'paar', nummer: 'iv)', eigenschaft: 'linear unabhängig sind', test: 'unabhaengig', beispiel: [[1, 2], [3, 1]] },
+      { id: 'i', art: 'paar', nummer: 'i)', eigenschaft: 'orthogonal sind', liste: 'orthogonal,', test: 'orthogonal', beispiel: [[1, 2], [-2, 1]], beobachtung: 'v' },
+      { id: 'ii', art: 'paar', nummer: 'ii)', eigenschaft: 'parallel sind', liste: 'parallel,', test: 'parallel', beispiel: [[1, 2], [2, 4]], beobachtung: 'iv' },
+      { id: 'iii', art: 'paar', nummer: 'iii)', eigenschaft: 'antiparallel sind', liste: 'antiparallel,', test: 'antiparallel', beispiel: [[1, 2], [-1, -2]], beobachtung: 'iv' },
+      { id: 'iv', art: 'paar', nummer: 'iv)', eigenschaft: 'linear abhängig sind', liste: 'linear abhängig,', test: 'abhaengig', beispiel: [[1, 2], [-2, -4]], beobachtung: 'ii' },
+      { id: 'v', art: 'paar', nummer: 'v)', eigenschaft: 'linear unabhängig sind', liste: 'linear unabhängig', test: 'unabhaengig', beispiel: [[1, 2], [3, 1]] },
     ],
   },
 };
