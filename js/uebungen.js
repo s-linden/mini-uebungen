@@ -99,6 +99,8 @@ const UEBUNGEN = {
   'vektorpaare': {
     titel: 'Orthogonal, parallel, linear (un)abhängig',
     art: 'paare',
+    // Klick auf „Auswertung“ beendet die Abgabe und gibt alle Teilaufgaben frei (Rückmeldung sofort auf den Handys)
+    freigabeBeiAuswertung: true,
     hinweis: '',
     vorspann: String.raw`Geben Sie zwei Vektoren $\vec{a}, \vec{b} \in \mathbb{R}^2$ mit $\vec{a}, \vec{b} \neq \vec{0}$ an, die`,
     // „parallel“ wie im Skript: a = s·b mit s > 0

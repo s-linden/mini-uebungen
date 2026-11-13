@@ -7,6 +7,8 @@ Kurze Übungen im Hörsaal per QR-Code: Die Studierenden setzen ihre Antworten a
 3. **Auswertung:** Pro Aufgabe erscheinen alle abgegebenen Antworten nach Häufigkeit, zunächst neutral, damit die richtige Antwort nicht verraten wird.
 4. **Lösung zeigen:** beendet die Abgabe, färbt die Antworten grün/rot und spielt den Lösungsweg in der Skizze ab. Wird ein Vektor gegen seine Pfeilrichtung durchlaufen, erscheint er mit Minuszeichen. Erst jetzt sehen die Handys bei dieser Aufgabe, ob ihre Antwort stimmt.
 
+Mit `freigabeBeiAuswertung: true` (in `js/uebungen.js`, derzeit bei der Vektorpaar-Übung) gibt schon der Klick auf „Auswertung“ alle Teilaufgaben auf einmal frei.
+
 Die Reihenfolge der Terme spielt keine Rolle: `−c + b` und `b − c` zählen als dieselbe Antwort.
 
 ## Neue Miniübung ergänzen

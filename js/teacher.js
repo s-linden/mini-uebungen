@@ -234,9 +234,21 @@
   }
 
   // ---------- Bedienung ----------
-  const umschalten = () => { ansicht = ansicht === 'qr' ? 'auswertung' : 'qr'; render(); };
-  $('btn-toggle').onclick = umschalten;
-  $('btn-auswertung').onclick = umschalten;
+  // Bei Übungen mit freigabeBeiAuswertung gibt der Wechsel zur Auswertung alle Lösungen frei:
+  // Die Abgabe endet, und jedes Handy zeigt sofort richtig/falsch.
+  async function umschalten() {
+    if (ansicht === 'qr' && uebung().freigabeBeiAuswertung) {
+      const alle = uebung().aufgaben.map((a) => a.id);
+      if (alle.some((id) => !(runde.freigegeben || []).includes(id))) {
+        if (!confirm('Auswertung zeigen? Damit wird die Abgabe beendet, und alle sehen auf dem Handy, ob ihre Antworten richtig sind.')) return;
+        await Backend.updateRunde(code, { status: 'closed', freigegeben: alle });
+      }
+    }
+    ansicht = ansicht === 'qr' ? 'auswertung' : 'qr';
+    render();
+  }
+  $('btn-toggle').onclick = () => umschalten().catch((e) => fail('Freigabe fehlgeschlagen: ' + e.message));
+  $('btn-auswertung').onclick = $('btn-toggle').onclick;
   $('btn-loesung').onclick = () => zeigeLoesung().catch((e) => fail('Freigabe fehlgeschlagen: ' + e.message));
   $('btn-abgabe').onclick = () =>
     Backend.updateRunde(code, { status: runde.status === 'open' ? 'closed' : 'open' }).catch((e) => fail(e.message));
