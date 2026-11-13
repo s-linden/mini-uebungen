@@ -151,6 +151,7 @@
     const zeile = document.createElement('div');
     zeile.className = 'paar-eingabe';
     const felder = [];
+    let aktiv = null; // zuletzt angetipptes Feld, für den Vorzeichen-Knopf
     for (const [v, start] of [['a', 0], ['b', 2]]) {
       const name = Pruefung.setze(document.createElement('span'), String.raw`\vec{${v}}=`);
       name.className = 'vek-name vek-' + v;
@@ -163,6 +164,7 @@
         feld.autocomplete = 'off';
         feld.setAttribute('aria-label', `Vektor ${v}, ${k + 1}. Komponente`);
         feld.oninput = () => { eingaben[a.id][start + k] = feld.value; anzeigen[a.id](); };
+        feld.onfocus = () => { aktiv = feld; vorzeichen.disabled = false; };
         felder[start + k] = feld;
         spalte.appendChild(feld);
       }
@@ -172,6 +174,23 @@
     vorschau.className = 'paar-vorschau';
     zeile.appendChild(vorschau);
 
+    // Die Zifferntastatur des iPhones hat kein Minus: Vorzeichen per Knopf umkehren, ohne die Tastatur zu schließen.
+    const vorzeichen = document.createElement('button');
+    vorzeichen.type = 'button';
+    vorzeichen.className = 'vorzeichen';
+    vorzeichen.textContent = '± Vorzeichen';
+    vorzeichen.disabled = true;
+    vorzeichen.setAttribute('aria-label', 'Vorzeichen im ausgewählten Feld umkehren');
+    vorzeichen.addEventListener('pointerdown', (e) => e.preventDefault()); // Feld behält den Fokus
+    vorzeichen.addEventListener('mousedown', (e) => e.preventDefault());
+    vorzeichen.onclick = () => {
+      if (!aktiv) return;
+      const v = aktiv.value.trim();
+      aktiv.value = /^[-−]/.test(v) ? v.slice(1) : '-' + v;
+      aktiv.dispatchEvent(new Event('input'));
+      aktiv.focus();
+    };
+
     const hinweis = document.createElement('div');
     hinweis.className = 'paar-hinweis';
 
@@ -179,16 +198,19 @@
       const werte = eingaben[a.id];
       werte.forEach((w, i) => {
         if (felder[i].value !== w) felder[i].value = w;
-        felder[i].classList.toggle('ungueltig', w.trim() !== '' && Pruefung.zahl(w) === null);
+        felder[i].classList.toggle('ungueltig', !unfertig(w) && Pruefung.zahl(w) === null);
       });
       const kurz = kurzform(a);
       vorschau.replaceChildren(Paare.bild(kurz ? Pruefung.paar(kurz) : null));
-      hinweis.textContent = werte.some((w) => w.trim() !== '' && Pruefung.zahl(w) === null)
+      hinweis.textContent = werte.some((w) => !unfertig(w) && Pruefung.zahl(w) === null)
         ? 'Bitte nur Zahlen eingeben, z. B. 2, -1 oder 0,5.' : '';
       aktualisiereKnopf();
     };
-    karte.append(kopf, zeile, hinweis);
+    karte.append(kopf, zeile, vorzeichen, hinweis);
   }
+
+  // Leeres Feld oder nur ein Minus: noch in Arbeit, kein Fehler
+  const unfertig = (w) => ['', '-', '−'].includes(w.trim());
 
   function baueFormular() {
     const box = $('aufgaben');

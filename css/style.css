@@ -418,3 +418,4 @@ button.klein { font-size: 0.95rem; padding: 0.4em 0.8em; }
 .paar-galerie { grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 0.4rem; }
 .antworten.breit .antwort-term { white-space: normal; }
 .paare .paar-titel { font-size: 0.9em; }
+.vorzeichen { margin-top: 0.5rem; font-size: 1rem; padding: 0.35em 0.9em; min-height: 2.6rem; touch-action: manipulation; }
