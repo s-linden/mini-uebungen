@@ -92,4 +92,21 @@ const UEBUNGEN = {
       ];
     })(),
   },
+
+  // Übung mit Vektorpaaren im R² (art: 'paare'): Die Studierenden geben je Teilaufgabe zwei Vektoren ein.
+  //   test: welche Eigenschaft geprüft wird (siehe Pruefung.kategorie); beispiel: wird bei der Lösung gezeigt
+  //   beobachtung: bei der Lösung zeigen, wie viele richtige Paare auch eine andere Teilaufgabe erfüllen
+  'vektorpaare': {
+    titel: 'Orthogonal, parallel, linear (un)abhängig',
+    art: 'paare',
+    hinweis: '',
+    vorspann: String.raw`Geben Sie zwei Vektoren $\vec{a}, \vec{b} \in \mathbb{R}^2$ mit $\vec{a}, \vec{b} \neq \vec{0}$ an, die`,
+    // „parallel“ wie im Skript: a = s·b mit s > 0
+    aufgaben: [
+      { id: 'i', art: 'paar', nummer: 'i)', eigenschaft: 'orthogonal sind', test: 'orthogonal', beispiel: [[1, 2], [-2, 1]], beobachtung: 'iv' },
+      { id: 'ii', art: 'paar', nummer: 'ii)', eigenschaft: 'parallel sind', test: 'parallel', beispiel: [[1, 2], [2, 4]], beobachtung: 'iii' },
+      { id: 'iii', art: 'paar', nummer: 'iii)', eigenschaft: 'linear abhängig sind', test: 'abhaengig', beispiel: [[1, 2], [-1, -2]], beobachtung: 'ii' },
+      { id: 'iv', art: 'paar', nummer: 'iv)', eigenschaft: 'linear unabhängig sind', test: 'unabhaengig', beispiel: [[1, 2], [3, 1]] },
+    ],
+  },
 };

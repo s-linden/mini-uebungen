@@ -94,11 +94,14 @@
     renderNav();
     Pruefung.mix($('frage'), Pruefung.frage(a));
     // Lange Textantworten brauchen eine breitere Spalte.
-    $('antworten').classList.toggle('breit', a.art === 'wahl' && a.optionen.some((o) => !o.anzeige.startsWith('$')));
+    $('antworten').classList.toggle('breit', a.art === 'paar' || (a.art === 'wahl' && a.optionen.some((o) => !o.anzeige.startsWith('$'))));
 
     $('zusammenfassung').textContent = frei
       ? `${ergebnis.richtig} von ${ergebnis.gesamt} richtig` + (ergebnis.gesamt ? ` (${Math.round((100 * ergebnis.richtig) / ergebnis.gesamt)} %)` : '')
-      : `${ergebnis.gesamt} ${ergebnis.gesamt === 1 ? 'Abgabe' : 'Abgaben'} · Welche Antwort stimmt?`;
+      : `${ergebnis.gesamt} ${ergebnis.gesamt === 1 ? 'Abgabe' : 'Abgaben'} · ` + (a.art === 'paar' ? 'Stimmen die Paare?' : 'Welche Antwort stimmt?');
+    $('btn-loesung').hidden = frei && !!a.art; // ohne Animation gibt es nichts zu wiederholen
+    $('loesung').classList.toggle('klein', a.art === 'paar');
+    if (a.art === 'paar') return renderPaare(ergebnis, frei);
 
     // Nach der Freigabe steht die richtige Antwort immer oben, auch wenn sie niemand gegeben hat.
     let liste = ergebnis.antworten;
@@ -117,8 +120,42 @@
     if (frei) Pruefung.mix($('loesung'), Pruefung.loesungSatz(a));
     else $('loesung').replaceChildren();
     $('btn-loesung').textContent = frei ? 'Noch einmal abspielen' : 'Lösung zeigen';
-    $('btn-loesung').hidden = frei && a.art === 'wahl'; // ohne Animation gibt es nichts zu wiederholen
+    abgabeKnopf();
+  }
 
+  // Vektorpaare: Bilder links, rechts nach der Freigabe die Kategorien (richtig bzw. Grund) und die Beobachtung.
+  function renderPaare(ergebnis, frei) {
+    const a = ergebnis.aufgabe;
+    if (skizze && skizze.galerie) skizze.galerie(a, abgaben, frei);
+    $('btn-loesung').textContent = 'Lösung zeigen';
+    if (!frei) {
+      $('antworten').replaceChildren();
+      $('loesung').replaceChildren();
+      return abgabeKnopf();
+    }
+    const reihenfolge = ['ok', ...Object.keys(ergebnis.kategorien).filter((k) => k !== 'ok')];
+    const zeilen = reihenfolge.map((k) => antwortZeile(
+      Pruefung.kategorieText(a, k), ergebnis.kategorien[k] || 0, ergebnis.gesamt, k === 'ok' ? 'richtig' : 'falsch'));
+    if (ergebnis.keine) zeilen.push(antwortZeile('Keine Antwort', ergebnis.keine, ergebnis.gesamt, 'neutral'));
+    $('antworten').replaceChildren(...zeilen);
+
+    const absaetze = [];
+    if (a.beobachtung) {
+      const b = uebung().aufgaben.find((x) => x.id === a.beobachtung);
+      const { von, auch } = Pruefung.auchRichtig(uebung(), abgaben, a, b);
+      const eigenschaft = Pruefung.kategorieText(b, 'ok');
+      let satz = '';
+      if (von === 1) satz = `Das richtige Paar aus ${a.nummer} ist ${auch ? 'auch' : 'nicht'} ${eigenschaft}`;
+      else if (auch === von) satz = `Alle ${von} richtigen Paare aus ${a.nummer} sind auch ${eigenschaft}`;
+      else satz = `${auch} von ${von} richtigen Paaren aus ${a.nummer} ${auch === 1 ? 'ist' : 'sind'} auch ${eigenschaft}`;
+      if (von) absaetze.push(satz + (auch ? `, also auch ${auch === 1 ? 'eine Lösung' : 'Lösungen'} von ${b.nummer}.` : '.'));
+    }
+    absaetze.push(Pruefung.loesungSatz(a));
+    $('loesung').replaceChildren(...absaetze.map((t) => Pruefung.mix(document.createElement('p'), t)));
+    abgabeKnopf();
+  }
+
+  function abgabeKnopf() {
     const offen = runde.status === 'open';
     $('btn-abgabe').textContent = offen ? 'Abgabe beenden' : 'Abgabe wieder öffnen';
     // Sobald eine Lösung sichtbar war, darf nicht mehr nachgebessert werden.
@@ -127,7 +164,7 @@
 
   function zeichneSkizze() {
     if (skizzeFuer === runde.uebung) return;
-    skizze = Skizze.erstelle($('skizze-gross'), uebung());
+    skizze = Skizze.erstelle($('skizze-gross'), uebung(), { galerie: true });
     skizzeFuer = runde.uebung;
     aktualisiereSkizze();
   }

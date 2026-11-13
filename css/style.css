@@ -377,3 +377,44 @@ button.klein { font-size: 0.95rem; padding: 0.4em 0.8em; }
 .kasten { font-size: 0.7em; grid-template-columns: auto auto; gap: 0.2em 1.2em; }
 .kasten-grund { grid-column: 1 / -1; white-space: nowrap; padding-left: 1em; color: var(--muted); margin-bottom: 0.5em; }
 .kasten-grund:last-child { margin-bottom: 0; }
+
+/* Vektorpaare im R² */
+:root { --vek-a: #1f5fbf; --vek-b: #c2410c; }
+.paar-bild { display: block; width: 100%; height: auto; background: var(--surface); }
+.paar-bild .achse { stroke: var(--border); stroke-width: 1.2; }
+.paar-bild .vek-a { stroke: var(--vek-a); fill: var(--vek-a); stroke-width: 3; }
+.paar-bild .vek-b { stroke: var(--vek-b); fill: var(--vek-b); stroke-width: 3; }
+.paar-bild .kopf { stroke: none; }
+.paar-bild .nullpunkt { stroke: none; }
+.paar-liste { display: grid; gap: 0.35em; text-align: left; padding-left: 0.6em; }
+.paar-titel { text-align: left; }
+.paar-galerie { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0.5rem; }
+.paar-galerie .paar-bild { border: 2px solid var(--border); border-radius: 10px; }
+.paar-galerie .paar-bild.ok { border-color: var(--richtig); border-width: 3px; }
+.paar-galerie .paar-bild.falsch { border-color: var(--falsch); border-width: 3px; }
+.paar-mehr { font-size: 0.6em; text-align: left; }
+.loesung-gross.klein { font-size: clamp(1rem, 1.6vw, 1.35rem); color: var(--text); }
+.loesung-gross.klein p { margin: 0 0 0.4rem; }
+.loesung-gross.klein p:last-child { color: var(--richtig); }
+
+/* Handy: Eingabe */
+.paar-eingabe { display: grid; grid-template-columns: auto auto auto auto minmax(4.5rem, 1fr); align-items: center; gap: 0.4rem; margin-top: 0.5rem; }
+.vek-name { font-size: 1.2rem; }
+.vek-name.vek-a .katex { color: var(--vek-a); }
+.vek-name.vek-b .katex { color: var(--vek-b); }
+.vek-spalte { display: grid; gap: 0.3rem; padding: 0.25rem 0.35rem; border-left: 2px solid var(--text); border-right: 2px solid var(--text); border-radius: 14px; }
+.vek-spalte input { width: 3.3rem; font: inherit; font-size: 1.1rem; text-align: center; padding: 0.3rem 0.2rem; border: 1.5px solid var(--border); border-radius: 8px; background: var(--surface); color: var(--text); }
+.vek-spalte input:focus { outline: 2px solid var(--accent); border-color: var(--accent); }
+.vek-spalte input.ungueltig { border-color: var(--falsch); background: #fdecea; }
+.paar-vorschau { justify-self: end; width: 100%; max-width: 6.5rem; }
+.paar-vorschau .paar-bild { border: 1px solid var(--border); border-radius: 8px; }
+.paar-hinweis { color: var(--falsch); font-size: 0.9rem; min-height: 0; }
+.paar-hinweis:empty { display: none; }
+.grund { margin-top: 0.2rem; color: var(--falsch); font-size: 1rem; }
+.paar-eingabe { grid-template-columns: auto auto auto auto minmax(3.5rem, 1fr); gap: 0.3rem; }
+.vek-name { font-size: 1.05rem; }
+.vek-spalte { padding: 0.2rem 0.25rem; }
+.vek-spalte input { width: 2.9rem; font-size: 1.05rem; padding: 0.3rem 0.1rem; }
+.paar-galerie { grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 0.4rem; }
+.antworten.breit .antwort-term { white-space: normal; }
+.paare .paar-titel { font-size: 0.9em; }

@@ -13,7 +13,8 @@ Die Reihenfolge der Terme spielt keine Rolle: `−c + b` und `b − c` zählen a
 
 Alle Übungen stehen in [`js/uebungen.js`](js/uebungen.js), die Auswahl dazu erscheint am Beamer. Es gibt zwei Arten:
 - **Vektor-Übung:** Punkte der Skizze, Vektoren (Start- und Endpunkt), Position der Beschriftungen und je Aufgabe der Lösungsweg.
-- **Aussagen-Übung** (`art: 'aussagen'`): Auswahlaufgaben mit Optionen, richtiger Antwort und Erklärung, die bei der Lösung erscheint.
+- **Aussagen-Übung** (`art: 'aussagen'`): Auswahlaufgaben mit Optionen, richtiger Antwort und einem Begründungskasten, der bei der Lösung erscheint.
+- **Vektorpaar-Übung** (`art: 'paare'`): Je Teilaufgabe werden zwei Vektoren im ℝ² eingegeben (mit Pfeil-Vorschau). Das Tool prüft exakt, ob sie orthogonal, parallel (a = s·b mit s > 0), linear abhängig oder unabhängig sind, und zeigt am Beamer eine Galerie der Paare sowie die Fehlergründe (z. B. „entgegengesetzt“, „Nullvektor“).
 
 ## Ausprobieren ohne Einrichtung (Demo-Modus)
 

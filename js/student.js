@@ -24,7 +24,14 @@
   }
 
   // Antwort einer Aufgabe in der gespeicherten Kurzform; '' = noch nichts eingegeben
-  const kurzform = (a) => (a.art === 'wahl' ? eingaben[a.id] : Pruefung.normal(eingaben[a.id]));
+  function kurzform(a) {
+    if (a.art === 'wahl') return eingaben[a.id];
+    if (a.art === 'paar') {
+      const z = eingaben[a.id].map(Pruefung.zahl);
+      return z.every((x) => x !== null) ? Pruefung.paarKurz([[z[0], z[1]], [z[2], z[3]]]) : '';
+    }
+    return Pruefung.normal(eingaben[a.id]);
+  }
 
   function aktualisiereKnopf() {
     $('btn-submit').disabled = !uebung.aufgaben.some(kurzform);
@@ -136,10 +143,57 @@
     karte.append(kopf, zeile, optionen);
   }
 
+  // Zwei Vektoren als Spalten mit je zwei Eingabefeldern, daneben die Pfeile als Vorschau
+  function paarKarte(a, karte) {
+    const kopf = kopfElement(a);
+    kopf.appendChild(Object.assign(document.createElement('strong'), { textContent: `${a.nummer} … ${a.eigenschaft}` }));
+
+    const zeile = document.createElement('div');
+    zeile.className = 'paar-eingabe';
+    const felder = [];
+    for (const [v, start] of [['a', 0], ['b', 2]]) {
+      const name = Pruefung.setze(document.createElement('span'), String.raw`\vec{${v}}=`);
+      name.className = 'vek-name vek-' + v;
+      const spalte = document.createElement('span');
+      spalte.className = 'vek-spalte';
+      for (let k = 0; k < 2; k++) {
+        const feld = document.createElement('input');
+        feld.type = 'text';
+        feld.inputMode = 'decimal';
+        feld.autocomplete = 'off';
+        feld.setAttribute('aria-label', `Vektor ${v}, ${k + 1}. Komponente`);
+        feld.oninput = () => { eingaben[a.id][start + k] = feld.value; anzeigen[a.id](); };
+        felder[start + k] = feld;
+        spalte.appendChild(feld);
+      }
+      zeile.append(name, spalte);
+    }
+    const vorschau = document.createElement('span');
+    vorschau.className = 'paar-vorschau';
+    zeile.appendChild(vorschau);
+
+    const hinweis = document.createElement('div');
+    hinweis.className = 'paar-hinweis';
+
+    anzeigen[a.id] = () => {
+      const werte = eingaben[a.id];
+      werte.forEach((w, i) => {
+        if (felder[i].value !== w) felder[i].value = w;
+        felder[i].classList.toggle('ungueltig', w.trim() !== '' && Pruefung.zahl(w) === null);
+      });
+      const kurz = kurzform(a);
+      vorschau.replaceChildren(Paare.bild(kurz ? Pruefung.paar(kurz) : null));
+      hinweis.textContent = werte.some((w) => w.trim() !== '' && Pruefung.zahl(w) === null)
+        ? 'Bitte nur Zahlen eingeben, z. B. 2, -1 oder 0,5.' : '';
+      aktualisiereKnopf();
+    };
+    karte.append(kopf, zeile, hinweis);
+  }
+
   function baueFormular() {
     const box = $('aufgaben');
     box.replaceChildren();
-    for (const a of uebung.aufgaben) eingaben[a.id] = a.art === 'wahl' ? '' : [];
+    for (const a of uebung.aufgaben) eingaben[a.id] = a.art === 'wahl' ? '' : a.art === 'paar' ? ['', '', '', ''] : [];
     for (const a of uebung.aufgaben) {
       if (a.vorab) {
         const p = document.createElement('p');
@@ -150,6 +204,7 @@
       const karte = document.createElement('div');
       karte.className = 'aufgabe';
       if (a.art === 'wahl') wahlKarte(a, karte);
+      else if (a.art === 'paar') paarKarte(a, karte);
       else vektorKarte(a, karte);
       box.appendChild(karte);
       anzeigen[a.id]();
@@ -158,7 +213,12 @@
 
   function setzeEingaben(antworten) {
     for (const a of uebung.aufgaben) {
-      eingaben[a.id] = a.art === 'wahl' ? (antworten[a.id] || '') : Pruefung.terme(antworten[a.id]);
+      if (a.art === 'paar') {
+        const p = Pruefung.paar(antworten[a.id]);
+        eingaben[a.id] = p ? p.flat().map((x) => String(x).replace('.', ',')) : ['', '', '', ''];
+      } else {
+        eingaben[a.id] = a.art === 'wahl' ? (antworten[a.id] || '') : Pruefung.terme(antworten[a.id]);
+      }
       anzeigen[a.id]();
     }
   }
@@ -177,13 +237,13 @@
     for (const a of uebung.aufgaben) {
       const antwort = gesendet && Pruefung.gueltig(a, gesendet[a.id] || '') ? gesendet[a.id] : null;
       const frei = freigabe.includes(a.id);
-      const richtig = antwort === Pruefung.loesung(a);
+      const richtig = !!antwort && Pruefung.richtig(a, antwort);
       const karte = document.createElement('div');
       karte.className = 'aufgabe' + (frei ? (richtig ? ' richtig' : ' falsch') : '');
 
       const kopf = kopfElement(a);
       const titel = document.createElement('strong');
-      titel.textContent = a.art === 'wahl' ? a.nummer : `Aufgabe ${a.id}`;
+      titel.textContent = a.nummer || `Aufgabe ${a.id}`;
       kopf.appendChild(titel);
       if (frei) {
         const urteil = document.createElement('span');
@@ -193,16 +253,24 @@
       }
 
       const zeile = document.createElement('div');
-      zeile.className = a.art === 'wahl' ? 'satz' : 'gleichung';
+      zeile.className = a.art ? 'satz' : 'gleichung';
       if (antwort) Pruefung.mix(zeile, Pruefung.satz(a, antwort));
       else zeile.innerHTML = '<span class="muted">Keine Antwort abgegeben</span>';
       karte.append(kopf, zeile);
 
+      if (frei && !richtig && antwort && a.art === 'paar') {
+        karte.appendChild(Pruefung.mix(Object.assign(document.createElement('div'), { className: 'grund' }),
+          ((k) => (k === 'null' ? 'Ihr Paar enthält den Nullvektor.' : `Ihr Paar ist ${Pruefung.kategorieText(a, k)}.`))(Pruefung.kategorie(a, antwort))));
+      }
       if (frei && !richtig) {
         const l = document.createElement('div');
         l.className = 'loesung';
-        l.append('Lösung: ');
-        l.appendChild(Pruefung.mix(document.createElement('span'), Pruefung.loesungSatz(a)));
+        if (a.art === 'paar') {
+          Pruefung.mix(l, `Richtig wäre zum Beispiel ${Pruefung.anzeige(a, Pruefung.paarKurz(a.beispiel))}.`);
+        } else {
+          l.append('Lösung: ');
+          l.appendChild(Pruefung.mix(document.createElement('span'), Pruefung.loesungSatz(a)));
+        }
         karte.appendChild(l);
       }
       box.appendChild(karte);

@@ -120,6 +120,20 @@ const Backend = (() => {
     function testAntwort(a) {
       const zufall = Math.random();
       if (zufall < 0.1) return undefined;
+      if (a.art === 'paar') {
+        const z = () => Math.floor(Math.random() * 7) - 3;
+        let u = [z(), z()];
+        while (!u[0] && !u[1]) u = [z(), z()];
+        const k = 1 + Math.floor(Math.random() * 3);
+        const richtigesB = {
+          orthogonal: [-u[1] * k, u[0] * k],
+          parallel: [u[0] * k, u[1] * k],
+          abhaengig: [u[0] * -k, u[1] * -k],
+          unabhaengig: [u[1] + 1, -u[0] + 2],
+        }[a.test];
+        const b = zufall < 0.65 ? richtigesB : [z(), z()];
+        return Pruefung.paarKurz([u, b]);
+      }
       if (a.art === 'wahl') {
         if (zufall < 0.6) return a.richtig;
         return a.optionen[Math.floor(Math.random() * a.optionen.length)].wert;

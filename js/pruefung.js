@@ -32,9 +32,60 @@ const Pruefung = (() => {
     return zerlege(kurz).flatMap(({ s, c, v }) => Array(Math.min(c, 8)).fill({ s, v }));
   }
 
+  // ---------- Vektorpaare im R² ----------
+  // Kurzform "a1,a2;b1,b2"; Zahlen mit höchstens 3 Nachkommastellen, damit exakt gerechnet werden kann.
+  const ZAHL = /^-?\d{1,4}(?:\.\d{1,3})?$/;
+  const SKALA = 1000;
+
+  function paar(kurz) {
+    const m = /^([^,;]+),([^,;]+);([^,;]+),([^,;]+)$/.exec(kurz || '');
+    if (!m || !m.slice(1).every((z) => ZAHL.test(z))) return null;
+    const [a1, a2, b1, b2] = m.slice(1).map(Number);
+    return [[a1, a2], [b1, b2]];
+  }
+
+  // Eingabe ("1,5" oder "-2") → Zahl oder null
+  function zahl(text) {
+    const t = String(text).trim().replace(',', '.').replace('−', '-');
+    return ZAHL.test(t) ? Number(t) : null;
+  }
+
+  const paarKurz = ([[a1, a2], [b1, b2]]) => `${a1},${a2};${b1},${b2}`;
+
+  // Kategorie eines Paares für die Aufgabe: 'ok' oder der Grund, warum nicht
+  function kategorie(aufgabe, kurz) {
+    const p = paar(kurz);
+    const [[a1, a2], [b1, b2]] = p.map((v) => v.map((x) => Math.round(x * SKALA)));
+    if ((a1 === 0 && a2 === 0) || (b1 === 0 && b2 === 0)) return 'null';
+    const skalar = a1 * b1 + a2 * b2;
+    const det = a1 * b2 - a2 * b1;
+    switch (aufgabe.test) {
+      case 'orthogonal': return skalar === 0 ? 'ok' : 'nicht-orthogonal';
+      case 'parallel': return det !== 0 ? 'unabhaengig' : skalar > 0 ? 'ok' : 'entgegengesetzt';
+      case 'abhaengig': return det === 0 ? 'ok' : 'unabhaengig';
+      case 'unabhaengig': return det !== 0 ? 'ok' : 'abhaengig';
+    }
+  }
+
+  const KATEGORIEN = {
+    'null': 'Nullvektor verwendet',
+    'nicht-orthogonal': 'nicht orthogonal',
+    'entgegengesetzt': String.raw`linear abhängig, aber entgegengesetzt ($s<0$)`,
+    'unabhaengig': 'linear unabhängig',
+    'abhaengig': 'linear abhängig',
+  };
+  const RICHTIG = { orthogonal: 'orthogonal', parallel: 'parallel', abhaengig: 'linear abhängig', unabhaengig: 'linear unabhängig' };
+  const kategorieText = (a, key) => (key === 'ok' ? RICHTIG[a.test] : KATEGORIEN[key]);
+  const zahlTex = (x) => String(x).replace('.', '{,}');
+  const paarTex = (p) => {
+    const [[a1, a2], [b1, b2]] = p;
+    return String.raw`\vec{a}=(${zahlTex(a1)},\,${zahlTex(a2)}),\ \vec{b}=(${zahlTex(b1)},\,${zahlTex(b2)})`;
+  };
+
   // Daten kommen von fremden Geräten: nur Antworten aus den erlaubten Vektoren zählen.
   function gueltig(aufgabe, kurz) {
     if (aufgabe.art === 'wahl') return aufgabe.optionen.some((o) => o.wert === kurz);
+    if (aufgabe.art === 'paar') return !!paar(kurz);
     if (kurz === '0') return true;
     return /^(?:[+-]\d{0,2}[a-z])+$/.test(kurz) && zerlege(kurz).every(({ v }) => aufgabe.aus.includes(v));
   }
@@ -53,29 +104,66 @@ const Pruefung = (() => {
   const texLoesung = (a) => `${vek(a.ziel)}=${texTerme(ausWeg(a))}`;
   const loesung = (a) => (a.art === 'wahl' ? a.richtig : normal(ausWeg(a)));
 
-  // Anzeigen für beide Aufgabenarten, als Text mit Formeln zwischen $…$
+  // Anzeigen für alle Aufgabenarten, als Text mit Formeln zwischen $…$
   const option = (a, kurz) => a.optionen.find((o) => o.wert === kurz).anzeige;
-  const anzeige = (a, kurz) => (a.art === 'wahl' ? option(a, kurz) : `$${texKurz(kurz)}$`);
-  const frage = (a) => (a.art === 'wahl' ? `${a.vor} ${a.luecke} ${a.nach}` : `$${texFrage(a)}$`);
-  const satz = (a, kurz) => (a.art === 'wahl' ? `${a.vor} ${option(a, kurz)} ${a.nach}` : `$${texZiel(a)}=${texKurz(kurz)}$`);
-  const loesungSatz = (a) => (a.art === 'wahl' ? satz(a, a.richtig) : `$${texLoesung(a)}$`);
+  function anzeige(a, kurz) {
+    if (a.art === 'wahl') return option(a, kurz);
+    if (a.art === 'paar') return `$${paarTex(paar(kurz))}$`;
+    return `$${texKurz(kurz)}$`;
+  }
+  function frage(a) {
+    if (a.art === 'wahl') return `${a.vor} ${a.luecke} ${a.nach}`;
+    if (a.art === 'paar') return String.raw`$\vec{a},\vec{b}\neq\vec{0}$, die ${a.eigenschaft}`;
+    return `$${texFrage(a)}$`;
+  }
+  function satz(a, kurz) {
+    if (a.art === 'wahl') return `${a.vor} ${option(a, kurz)} ${a.nach}`;
+    if (a.art === 'paar') return anzeige(a, kurz);
+    return `$${texZiel(a)}=${texKurz(kurz)}$`;
+  }
+  function loesungSatz(a) {
+    if (a.art === 'wahl') return satz(a, a.richtig);
+    if (a.art === 'paar') return `Zum Beispiel $${paarTex(a.beispiel)}$`;
+    return `$${texLoesung(a)}$`;
+  }
+  const richtig = (a, kurz) => (a.art === 'paar' ? kategorie(a, kurz) === 'ok' : kurz === loesung(a));
 
   // Ergebnis je Aufgabe: Antworten nach Häufigkeit, die richtige Antwort ist markiert.
+  // Bei Vektorpaaren zusätzlich nach Kategorie (richtig bzw. Grund für falsch).
   function auszaehlen(uebung, abgaben) {
     return uebung.aufgaben.map((a) => {
       const zahl = {};
+      const kategorien = {};
       let keine = 0;
       for (const abgabe of abgaben) {
         const kurz = abgabe[a.id];
-        if (typeof kurz === 'string' && gueltig(a, kurz)) zahl[kurz] = (zahl[kurz] || 0) + 1;
-        else keine++;
+        if (typeof kurz === 'string' && gueltig(a, kurz)) {
+          zahl[kurz] = (zahl[kurz] || 0) + 1;
+          if (a.art === 'paar') {
+            const k = kategorie(a, kurz);
+            kategorien[k] = (kategorien[k] || 0) + 1;
+          }
+        } else keine++;
       }
-      const richtigeForm = loesung(a);
       const antworten = Object.entries(zahl)
-        .map(([kurz, n]) => ({ kurz, n, richtig: kurz === richtigeForm }))
+        .map(([kurz, n]) => ({ kurz, n, richtig: richtig(a, kurz) }))
         .sort((x, y) => y.n - x.n || x.kurz.localeCompare(y.kurz));
-      return { aufgabe: a, antworten, keine, richtig: zahl[richtigeForm] || 0, gesamt: abgaben.length };
+      const anzahlRichtig = antworten.filter((x) => x.richtig).reduce((s, x) => s + x.n, 0);
+      return { aufgabe: a, antworten, kategorien, keine, richtig: anzahlRichtig, gesamt: abgaben.length };
     });
+  }
+
+  // Wie viele der richtigen Antworten zu Aufgabe a erfüllen auch Aufgabe b? (z. B. i → iv)
+  function auchRichtig(uebung, abgaben, a, b) {
+    let von = 0;
+    let auch = 0;
+    for (const abgabe of abgaben) {
+      const kurz = abgabe[a.id];
+      if (typeof kurz !== 'string' || !paar(kurz) || !richtig(a, kurz)) continue;
+      von++;
+      if (richtig(b, kurz)) auch++;
+    }
+    return { von, auch };
   }
 
   function setze(el, tex) {
@@ -96,5 +184,8 @@ const Pruefung = (() => {
     return el;
   }
 
-  return { normal, terme, gueltig, texTerme, texZiel, texFrage, loesung, anzeige, frage, satz, loesungSatz, auszaehlen, setze, mix };
+  return {
+    normal, terme, gueltig, texTerme, texZiel, texFrage, loesung, anzeige, frage, satz, loesungSatz, auszaehlen, setze, mix,
+    paar, zahl, paarKurz, kategorie, kategorieText, richtig, auchRichtig,
+  };
 })();
